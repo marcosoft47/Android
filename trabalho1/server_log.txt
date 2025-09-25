@@ -1,0 +1,32 @@
+2025/09/25 17:31:38 - Servidor iniciado.
+2025/09/25 17:32:27 - Cliente conectado: marco123 (IP: 127.0.0.1)
+2025/09/25 17:32:37 - Cliente conectado: marco456 (IP: 127.0.0.1)
+2025/09/25 17:34:29 - Cliente desconectado: marco123
+2025/09/25 17:34:33 - Cliente desconectado: marco456
+2025/09/25 17:41:20 - Servidor iniciado.
+2025/09/25 17:43:01 - Cliente conectado: marcosoft47 (IP: 127.0.0.1)
+2025/09/25 17:44:18 - Cliente desconectado: marcosoft47
+2025/09/25 17:47:40 - Servidor iniciado.
+2025/09/25 17:47:54 - Cliente conectado: marco123 (IP: 10.37.194.250)
+2025/09/25 17:48:08 - Cliente conectado: marco456 (IP: 10.37.194.250)
+2025/09/25 17:55:55 - Cliente conectado: caloio (IP: 10.37.194.199)
+2025/09/25 17:58:38 - Cliente desconectado: marco456
+2025/09/25 18:01:07 - Cliente desconectado: caloio
+2025/09/25 18:01:12 - Cliente conectado: caloio (IP: 10.37.194.199)
+2025/09/25 18:03:04 - Cliente desconectado: caloio
+2025/09/25 18:05:19 - Cliente desconectado: marco123
+2025/09/25 18:05:38 - Servidor iniciado.
+2025/09/25 18:05:47 - Cliente conectado: marcosoft47 (IP: 127.0.0.1)
+2025/09/25 18:05:57 - Cliente conectado: marco123 (IP: 127.0.0.1)
+2025/09/25 18:12:23 - Servidor iniciado.
+2025/09/25 18:12:29 - Cliente conectado: marcosoft47 (IP: 127.0.0.1)
+2025/09/25 18:12:45 - Servidor iniciado.
+2025/09/25 18:12:58 - Cliente conectado: marcosoft47 (IP: 10.37.194.250)
+2025/09/25 18:16:26 - Cliente conectado: marco123 (IP: 10.37.194.250)
+2025/09/25 18:18:03 - Cliente conectado: caloio (IP: 10.37.194.199)
+2025/09/25 18:26:13 - Cliente desconectado: marcosoft47
+2025/09/25 18:26:16 - Cliente desconectado: marco123
+2025/09/25 18:29:11 - Servidor iniciado.
+2025/09/25 18:29:28 - Cliente conectado: marcosoft47 (IP: 10.37.194.250)
+2025/09/25 18:29:31 - Cliente conectado: caloio (IP: 10.37.194.199)
+2025/09/25 18:34:59 - Cliente desconectado: marcosoft47
