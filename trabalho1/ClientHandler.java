@@ -73,6 +73,8 @@ public class ClientHandler implements Runnable {
                     sendMessage("Servidor: Comando '/send' inválido. Use '/send message <dest> <msg>' ou '/send file <dest> <path>'.");
                 }
                 break;
+            case "/help":
+                sendMessage("Comandos disponíveis: \n /users \n /send message <destinatario> <mensagem> \n /send file <destinatario> <caminho_do_arquivo> \n /help \n /sair");
             case "/sair":
                 break;
             default:

@@ -130,7 +130,7 @@ class ServerListener implements Runnable {
                     System.out.println("Nome de usuário já em uso. Tente outro.");
                 } else if (serverResponse.equals("USERNAME_ACCEPTED")) {
                     System.out.println("Nome de usuário aceito. Você está online!");
-                    System.out.println("Comandos disponíveis: \n /users \n /send message <destinatario> <mensagem> \n /send file <destinatario> <caminho_do_arquivo> \n /sair");
+                    System.out.println("Comandos disponíveis: \n /users \n /send message <destinatario> <mensagem> \n /send file <destinatario> <caminho_do_arquivo> \n /help \n /sair");
                 } else if (serverResponse.startsWith("MSG:")) {
                     System.out.println(serverResponse.substring(4));
                 } else if (serverResponse.startsWith("FILE:")) {

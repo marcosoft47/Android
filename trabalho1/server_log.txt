@@ -30,3 +30,6 @@
 2025/09/25 18:29:28 - Cliente conectado: marcosoft47 (IP: 10.37.194.250)
 2025/09/25 18:29:31 - Cliente conectado: caloio (IP: 10.37.194.199)
 2025/09/25 18:34:59 - Cliente desconectado: marcosoft47
+2025/09/26 11:07:11 - Servidor iniciado.
+2025/09/26 11:07:18 - Cliente conectado: marcosoft47 (IP: 127.0.0.1)
+2025/09/26 11:07:29 - Cliente desconectado: marcosoft47
