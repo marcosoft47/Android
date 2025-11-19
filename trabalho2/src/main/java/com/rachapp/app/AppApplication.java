@@ -18,3 +18,4 @@ public class AppApplication {
       return String.format("Hello %s!", name);
     }
 }
+
