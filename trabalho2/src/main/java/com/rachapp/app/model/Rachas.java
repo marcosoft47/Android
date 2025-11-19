@@ -2,12 +2,15 @@ package com.rachapp.app.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
+
 import org.springframework.data.geo.Point;
 
 @Entity
-public class Racha {
+@Table(name = "rachas")
+public class Rachas {
     
     @Id
     private Long id_racha;
@@ -22,6 +25,6 @@ public class Racha {
     public void set_timestamp(LocalDateTime timestamp) {this.timestamp = timestamp;}
 
     public Point get_location() {return location;}
-    public void set_location(Point timestamp) {this.location = location;}
+    public void set_location(Point location) {this.location = location;}
 
 }

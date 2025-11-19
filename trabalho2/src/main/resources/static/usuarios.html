@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Teste de Integração</title>
+    <style>
+        /* Um estilo simples para a tabela não ficar feia */
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+    <h2>Usuários no Banco de Dados</h2>
+    <button onclick="carregarUsuarios()">Atualizar Lista</button>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Telefone</th>
+            </tr>
+        </thead>
+        <tbody id="corpoTabela">
+            </tbody>
+    </table>
+
+    <script>
+        // Essa função faz o papel que o Android faria: busca os dados
+        function carregarUsuarios() {
+            fetch('/usuarios') // 1. Chama a sua API (O Controller)
+                .then(response => response.json()) // 2. Converte a resposta para JSON
+                .then(data => {
+                    // 3. Pega o elemento da tabela
+                    const tbody = document.getElementById('corpoTabela');
+                    tbody.innerHTML = ''; // Limpa a tabela antes de adicionar
+
+                    // 4. Para cada usuário recebido, cria uma linha na tabela
+                    data.forEach(usuario => {
+                        const linha = `
+                            <tr>
+                                <td>${usuario.id_usuario}</td>
+                                <td>${usuario.nome}</td>
+                                <td>${usuario.email}</td>
+                                <td>${usuario.telefone}</td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += linha;
+                    });
+                })
+                .catch(erro => {
+                    console.error('Erro ao buscar:', erro);
+                    alert('Erro ao conectar com o back-end!');
+                });
+        }
+
+        // Carrega automaticamente ao abrir a página
+        carregarUsuarios();
+    </script>
+
+</body>
+</html>

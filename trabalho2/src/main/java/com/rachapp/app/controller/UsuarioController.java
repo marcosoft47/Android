@@ -17,14 +17,14 @@ public class UsuarioController {
     }
 
     // Quando o Android fizer um GET em /usuarios, roda isso:
-    // @GetMapping
-    // public List<Usuario> listarTodos() {
-    //     // return service.findAll(); // Retorna todos os usuários em formato JSON
-    // }
+    @GetMapping
+    public List<Usuario> listarTodos() {
+        return service.buscarTodos(); // Retorna todos os usuários em formato JSON
+    }
 
-    // // Quando o Android fizer um POST (enviar dados), roda isso:
-    // @PostMapping
-    // public Usuario salvarNovo(@RequestBody Usuario novoUsuario) {
-    //     // return service.save(novoUsuario);
-    // }
+    // Quando o Android fizer um POST (enviar dados), roda isso:
+    @PostMapping
+    public Usuario salvarNovo(@RequestBody Usuario novoUsuario) {
+        return service.salvarUsuario(novoUsuario);
+    }
 }
