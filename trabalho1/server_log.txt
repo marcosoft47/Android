@@ -42,3 +42,10 @@
 2025/09/26 11:20:57 - Cliente conectado: marcos (IP: 127.0.0.1)
 2025/09/26 11:21:09 - Cliente desconectado: marcos
 2025/09/26 11:21:12 - Cliente desconectado: marco
+2025/09/26 15:15:32 - Servidor iniciado.
+2025/09/26 15:17:29 - Cliente conectado: marco123 (IP: 127.0.0.1)
+2025/09/26 15:17:38 - Cliente conectado: marco456 (IP: 127.0.0.1)
+2025/09/26 15:18:30 - Cliente conectado: marco789 (IP: 127.0.0.1)
+2025/09/26 15:18:44 - Cliente desconectado: marco789
+2025/09/26 15:18:48 - Cliente desconectado: marco456
+2025/09/26 15:18:50 - Cliente desconectado: marco123
