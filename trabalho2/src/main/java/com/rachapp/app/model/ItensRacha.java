@@ -4,7 +4,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name='itens_racha')
+@Table(name="itens_racha")
 public class ItensRacha {
     
 }
