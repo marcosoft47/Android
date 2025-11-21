@@ -1,24 +1,44 @@
 package com.rachapp.app.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.IdClass;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "amigos")
-@IdClass(AmigosId.class)
+@IdClass(AmigosId.class) // Must match the class name below
 public class Amigos {
-    
-    @Id
-    private Long id_usuario;
-    
-    @Id
-    private Long id_amigo;
 
-    public Long get_id_usuario() {return id_usuario;}
-    public void set_id_usuario(Long id_usuario) {this.id_usuario = id_usuario;}
+    @Id
+    @Column(name = "id_usuario") // Maps 'idUsuario' (Java) to 'id_usuario' (DB)
+    private Long idUsuario;
 
-    public Long get_id_amigo() {return id_amigo;}
-    public void set_id_amigo(Long id_amigo) {this.id_amigo = id_amigo;}    
+    @Id
+    @Column(name = "id_amigo")   // Maps 'idAmigo' (Java) to 'id_amigo' (DB)
+    private Long idAmigo;
+
+    // --- Constructors ---
+    public Amigos() {
+    }
+
+    public Amigos(Long idUsuario, Long idAmigo) {
+        this.idUsuario = idUsuario;
+        this.idAmigo = idAmigo;
+    }
+
+    // --- Getters and Setters (Standard Java Naming) ---
+
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
+
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public Long getIdAmigo() {
+        return idAmigo;
+    }
+
+    public void setIdAmigo(Long idAmigo) {
+        this.idAmigo = idAmigo;
+    }
 }

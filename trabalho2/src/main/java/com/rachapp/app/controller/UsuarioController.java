@@ -2,29 +2,59 @@ package com.rachapp.app.controller;
 
 import com.rachapp.app.model.Usuario;
 import com.rachapp.app.service.UsuarioService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-@RestController // Diz que essa classe responde a requisições web
-@RequestMapping("/usuarios") // Define o endereço base: site.com/usuarios
+@RestController
+@RequestMapping("/api/usuarios") // This sets the base URL: http://localhost:8080/api/usuarios
 public class UsuarioController {
 
-    // Injeta o service para podermos usar o banco
-    private final UsuarioService service;
+    private final UsuarioService usuarioService;
 
-    public UsuarioController(UsuarioService service) {
-        this.service = service;
+    @Autowired
+    public UsuarioController(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
     }
 
-    // Quando o Android fizer um GET em /usuarios, roda isso:
-    @GetMapping
-    public List<Usuario> listarTodos() {
-        return service.buscarTodos(); // Retorna todos os usuários em formato JSON
-    }
-
-    // Quando o Android fizer um POST (enviar dados), roda isso:
+    // POST /api/usuarios -> Create a new user
     @PostMapping
-    public Usuario salvarNovo(@RequestBody Usuario novoUsuario) {
-        return service.salvarUsuario(novoUsuario);
+    public ResponseEntity<Usuario> createUsuario(@RequestBody Usuario usuario) {
+        Usuario newUsuario = usuarioService.createUsuario(usuario);
+        return ResponseEntity.ok(newUsuario);
+    }
+
+    // GET /api/usuarios -> Get all users
+    @GetMapping
+    public ResponseEntity<List<Usuario>> getAllUsuarios() {
+        List<Usuario> usuarios = usuarioService.getAllUsuarios();
+        return ResponseEntity.ok(usuarios);
+    }
+
+    // GET /api/usuarios/{id} -> Get specific user (e.g., /api/usuarios/1)
+    @GetMapping("/{id}")
+    public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
+        return usuarioService.getUsuarioById(id)
+                .map(ResponseEntity::ok) // If found, return 200 OK with user
+                .orElse(ResponseEntity.notFound().build()); // If not found, return 404
+    }
+
+    // UPDATE (PUT)
+    @PutMapping("/{id}")
+    public ResponseEntity<Usuario> updateUsuario(@PathVariable Long id, @RequestBody Usuario usuarioDetails) {
+        return usuarioService.updateUsuario(id, usuarioDetails)
+                .map(ResponseEntity::ok) // If found and updated, return 200 OK
+                .orElse(ResponseEntity.notFound().build()); // If ID not found, return 404
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUsuario(@PathVariable Long id) {
+        if (usuarioService.deleteUsuario(id)) {
+            return ResponseEntity.noContent().build(); // 204 No Content (Success)
+        }
+        return ResponseEntity.notFound().build(); // 404 Not Found
     }
 }

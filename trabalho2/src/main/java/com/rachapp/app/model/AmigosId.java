@@ -4,36 +4,45 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class AmigosId implements Serializable {
-    
-    private Long id_usuario;
-    private Long id_amigo;
 
-    // Construtor Vazio (Obrigatório)
+    // FIELD NAMES MUST MATCH THE ENTITY EXACTLY
+    private Long idUsuario;
+    private Long idAmigo;
+
     public AmigosId() {}
 
-    // Construtor com argumentos (Facilita sua vida depois)
-    public AmigosId(Long id_usuario, Long id_amigo) {
-        this.id_usuario = id_usuario;
-        this.id_amigo = id_amigo;
+    public AmigosId(Long idUsuario, Long idAmigo) {
+        this.idUsuario = idUsuario;
+        this.idAmigo = idAmigo;
     }
 
-    public Long get_id_usuario() {return id_usuario;}
-    public void set_id_usuario(Long id_usuario) {this.id_usuario = id_usuario;}
+    public Long getIdUsuario() {
+        return idUsuario;
+    }
 
-    public Long get_id_amigo() {return id_amigo;}
-    public void set_id_amigo(Long id_amigo) {this.id_amigo = id_amigo;}    
+    public void setIdUsuario(Long idUsuario) {
+        this.idUsuario = idUsuario;
+    }
+
+    public Long getIdAmigo() {
+        return idAmigo;
+    }
+
+    public void setIdAmigo(Long idAmigo) {
+        this.idAmigo = idAmigo;
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        AmigosId that = (AmigosId) o;
-        return Objects.equals(id_usuario, that.id_usuario) && 
-               Objects.equals(id_amigo, that.id_amigo);
+        AmigosId amigosId = (AmigosId) o;
+        return Objects.equals(idUsuario, amigosId.idUsuario) &&
+                Objects.equals(idAmigo, amigosId.idAmigo);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id_usuario, id_amigo);
+        return Objects.hash(idUsuario, idAmigo);
     }
 }

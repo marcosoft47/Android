@@ -2,31 +2,53 @@ package com.rachapp.app.service;
 
 import com.rachapp.app.model.Usuario;
 import com.rachapp.app.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
-@Service // Define que aqui é a camada de lógica
+import java.util.List;
+import java.util.Optional;
+
+@Service
 public class UsuarioService {
 
-    private final UsuarioRepository repository;
+    private final UsuarioRepository usuarioRepository;
 
-    // Injeção de dependência do Repository
-    public UsuarioService(UsuarioRepository repository) {
-        this.repository = repository;
+    @Autowired
+    public UsuarioService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
-    public List<Usuario> buscarTodos() {
-        return repository.findAll();
+    // Create
+    public Usuario createUsuario(Usuario usuario) {
+        return usuarioRepository.save(usuario);
     }
 
-    public Usuario salvarUsuario(Usuario usuario) {
-        // --- AQUI ENTRA A LÓGICA DE NEGÓCIO ---
-        
-        // Exemplo: Validar se o nome está vazio
-        if (usuario.get_nome() == null || usuario.get_nome().isEmpty()) {
-            throw new RuntimeException("O nome é obrigatório!");
+    // Read All
+    public List<Usuario> getAllUsuarios() {
+        return usuarioRepository.findAll();
+    }
+
+    // Read One
+    public Optional<Usuario> getUsuarioById(Long id) {
+        return usuarioRepository.findById(id);
+    }
+
+    // UPDATE
+    public Optional<Usuario> updateUsuario(Long id, Usuario usuarioDetails) {
+        return usuarioRepository.findById(id).map(existingUser -> {
+            existingUser.setNome(usuarioDetails.getNome());
+            existingUser.setEmail(usuarioDetails.getEmail());
+            existingUser.setTelefone(usuarioDetails.getTelefone());
+            return usuarioRepository.save(existingUser);
+        });
+    }
+
+    // DELETE
+    public boolean deleteUsuario(Long id) {
+        if (usuarioRepository.existsById(id)) {
+            usuarioRepository.deleteById(id);
+            return true;
         }
-
-        return repository.save(usuario);
+        return false;
     }
 }
