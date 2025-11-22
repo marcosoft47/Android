@@ -18,37 +18,58 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    // Create
     public Usuario createUsuario(Usuario usuario) {
+        if (usuario.getAvatarId() == null) {
+            usuario.setAvatarId(1);
+        }
         return usuarioRepository.save(usuario);
     }
 
-    // Read All
     public List<Usuario> getAllUsuarios() {
         return usuarioRepository.findAll();
     }
 
-    // Read One
     public Optional<Usuario> getUsuarioById(Long id) {
         return usuarioRepository.findById(id);
     }
 
-    // UPDATE
     public Optional<Usuario> updateUsuario(Long id, Usuario usuarioDetails) {
         return usuarioRepository.findById(id).map(existingUser -> {
             existingUser.setNome(usuarioDetails.getNome());
             existingUser.setEmail(usuarioDetails.getEmail());
             existingUser.setTelefone(usuarioDetails.getTelefone());
+
+            if (usuarioDetails.getAvatarId() != null) {
+                existingUser.setAvatarId(usuarioDetails.getAvatarId());
+            }
+
+            if (usuarioDetails.getSenha() != null && !usuarioDetails.getSenha().isEmpty()) {
+                existingUser.setSenha(usuarioDetails.getSenha());
+            }
+
             return usuarioRepository.save(existingUser);
         });
     }
 
-    // DELETE
     public boolean deleteUsuario(Long id) {
         if (usuarioRepository.existsById(id)) {
             usuarioRepository.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    // NEW: Login Logic
+    public Usuario validarLogin(String email, String senha) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
+
+        // Check if user exists AND password matches
+        if (usuarioOpt.isPresent()) {
+            Usuario usuario = usuarioOpt.get();
+            if (usuario.getSenha().equals(senha)) {
+                return usuario;
+            }
+        }
+        return null; // Login failed
     }
 }

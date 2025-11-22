@@ -7,8 +7,8 @@ import jakarta.persistence.*;
 public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Essential for AUTO_INCREMENT
-    @Column(name = "id_usuario") // Maps idUsuario -> id_usuario
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
     private Long idUsuario;
 
     @Column(nullable = false)
@@ -17,18 +17,28 @@ public class Usuario {
     @Column(nullable = false)
     private String email;
 
+    // NEW FIELD: Password (Mapped to 'senha' column in DB)
+    @Column(nullable = false)
+    private String senha;
+
     private String telefone;
+
+    @Column(name = "avatar_id")
+    private Integer avatarId;
 
     // --- Constructors ---
     public Usuario() {}
 
-    public Usuario(String nome, String email, String telefone) {
+    // Updated Constructor to include 'senha'
+    public Usuario(String nome, String email, String senha, String telefone, Integer avatarId) {
         this.nome = nome;
         this.email = email;
+        this.senha = senha;
         this.telefone = telefone;
+        this.avatarId = avatarId;
     }
 
-    // --- Getters and Setters (Standard Java Format) ---
+    // --- Getters and Setters ---
 
     public Long getIdUsuario() {
         return idUsuario;
@@ -54,12 +64,27 @@ public class Usuario {
         this.email = email;
     }
 
+    public String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(String senha) {
+        this.senha = senha;
+    }
+
     public String getTelefone() {
         return telefone;
     }
 
-    public void setTelefone(String telefone) { // Fixed bug: parameter was 'email' and set 'email'
+    public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
 
+    public Integer getAvatarId() {
+        return avatarId;
+    }
+
+    public void setAvatarId(Integer avatarId) {
+        this.avatarId = avatarId;
+    }
 }
