@@ -35,7 +35,6 @@ public class Racha {
     @Column(columnDefinition = "POINT")
     private Point location;
 
-    // NEW: The creator of the Racha
     @ManyToOne
     @JoinColumn(name = "owner_id")
     private Usuario owner;
@@ -45,10 +44,13 @@ public class Racha {
 
     @Transient
     private Double latitude;
+
     @Transient
     private Double longitude;
+
+    // FIXED: Added this field to capture the ID from JSON
     @Transient
-    private Long ownerId; // For receiving ID from JSON
+    private Long ownerId;
 
     public Racha() {}
 
@@ -84,15 +86,31 @@ public class Racha {
     public void setLocalNome(String localNome) { this.localNome = localNome; }
     public Usuario getOwner() { return owner; }
     public void setOwner(Usuario owner) { this.owner = owner; }
-    public void setLatitude(Double latitude) { this.latitude = latitude; updateLocationFromCoordinates(); }
-    public void setLongitude(Double longitude) { this.longitude = longitude; updateLocationFromCoordinates(); }
-    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+        updateLocationFromCoordinates();
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+        updateLocationFromCoordinates();
+    }
+
     public Long getOwnerId() { return ownerId; }
+    public void setOwnerId(Long ownerId) { this.ownerId = ownerId; }
 
     @JsonProperty
-    public Double getLatitude() { return location != null ? location.getY() : latitude; }
+    public Double getLatitude() {
+        if (location != null) return location.getY();
+        return latitude;
+    }
+
     @JsonProperty
-    public Double getLongitude() { return location != null ? location.getX() : longitude; }
+    public Double getLongitude() {
+        if (location != null) return location.getX();
+        return longitude;
+    }
 
     public List<ItemRacha> getItens() { return itens; }
     public void setItens(List<ItemRacha> itens) { this.itens = itens; }

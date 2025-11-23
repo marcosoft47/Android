@@ -2,21 +2,13 @@ package com.rachapp.app.service;
 
 import com.rachapp.app.dto.ResumoDTO;
 import com.rachapp.app.dto.ResumoItemDTO;
-import com.rachapp.app.model.Devedor;
-import com.rachapp.app.model.ItemRacha;
-import com.rachapp.app.model.Racha;
-import com.rachapp.app.model.Usuario;
-import com.rachapp.app.repository.DevedorRepository;
-import com.rachapp.app.repository.ItemRachaRepository;
-import com.rachapp.app.repository.RachaRepository;
+import com.rachapp.app.model.*;
+import com.rachapp.app.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ResumoService {
@@ -24,67 +16,122 @@ public class ResumoService {
     @Autowired private DevedorRepository devedorRepository;
     @Autowired private RachaRepository rachaRepository;
     @Autowired private ItemRachaRepository itemRachaRepository;
+    @Autowired private UsuarioRepository usuarioRepository;
+    @Autowired private PagamentoRepository pagamentoRepository; // NEW Inject
 
     public ResumoDTO gerarResumoFinanceiro(Long userId) {
         List<ResumoItemDTO> aReceber = new ArrayList<>();
         List<ResumoItemDTO> aPagar = new ArrayList<>();
 
-        // 1. Calculate "A Pagar" (Debts I owe to others)
-        // Find all items where I am listed as a debtor
+        // --- 1. Calculate "A Pagar" (What I owe) ---
         List<Devedor> minhasDividas = devedorRepository.findByIdUsuario(userId);
 
+        // Group items by "Racha + Creditor" to check against total payments
+        Map<String, List<ResumoItemDTO>> debtGroups = new HashMap<>();
+        Map<String, BigDecimal> debtTotals = new HashMap<>();
+
         for (Devedor divida : minhasDividas) {
-            // Get the item and the racha
             ItemRacha item = itemRachaRepository.findById(divida.getIdItemRacha()).orElse(null);
             if (item == null) continue;
 
             Racha racha = item.getRacha();
-            // If I am the owner, I don't owe myself
-            if (racha.getOwner().getIdUsuario().equals(userId)) continue;
+            Usuario creditor = item.getPayer();
+            if (creditor == null) creditor = racha.getOwner();
+            if (creditor == null || creditor.getIdUsuario().equals(userId)) continue;
 
             BigDecimal valorItem = item.getPreco();
-            BigDecimal meuPercentual = divida.getPercentual(); // e.g., 33.33
-            BigDecimal meuValor = valorItem.multiply(meuPercentual).divide(new BigDecimal(100));
+            BigDecimal meuValor = valorItem.multiply(divida.getPercentual()).divide(new BigDecimal(100));
 
-            // Add to list (simplified: creating one entry per item. In reality, you might group by Racha)
-            aPagar.add(new ResumoItemDTO(
-                    racha.getOwner().getNome(), // I owe the Owner
+            String key = racha.getIdRacha() + "-" + creditor.getIdUsuario();
+
+            // Add to temporary list
+            ResumoItemDTO dto = new ResumoItemDTO(
+                    creditor.getNome(),
                     racha.getNome() + " - " + item.getNome(),
                     meuValor,
-                    racha.getOwner().getAvatarId()
-            ));
+                    creditor.getAvatarId(),
+                    creditor.getIdUsuario(),
+                    racha.getIdRacha()
+            );
+
+            debtGroups.computeIfAbsent(key, k -> new ArrayList<>()).add(dto);
+            debtTotals.merge(key, meuValor, BigDecimal::add);
         }
 
-        // 2. Calculate "A Receber" (Money others owe me)
-        // Find all Rachas I own
-        // Note: This query needs optimization in production, but works for MVP
-        List<Racha> meusRachas = rachaRepository.findAll().stream()
-                .filter(r -> r.getOwner() != null && r.getOwner().getIdUsuario().equals(userId))
-                .toList();
+        // Filter out paid debts
+        for (String key : debtGroups.keySet()) {
+            String[] parts = key.split("-");
+            Long rachaId = Long.parseLong(parts[0]);
+            Long creditorId = Long.parseLong(parts[1]);
+
+            BigDecimal totalDebt = debtTotals.get(key);
+            BigDecimal totalPaid = pagamentoRepository.calcularTotalPago(rachaId, userId, creditorId); // Me -> Them
+
+            // If I still owe money (Debt > Paid), add items to list
+            // Note: This is a binary "Show/Hide". Partial payments logic is complex,
+            // for now we hide ONLY if fully paid.
+            if (totalDebt.subtract(totalPaid).compareTo(BigDecimal.ZERO) > 0) {
+                aPagar.addAll(debtGroups.get(key));
+            }
+        }
+
+        // --- 2. Calculate "A Receber" (What others owe ME) ---
+        Map<String, List<ResumoItemDTO>> creditGroups = new HashMap<>();
+        Map<String, BigDecimal> creditTotals = new HashMap<>();
+
+        List<Racha> meusRachas = rachaRepository.findRachasByParticipante(userId);
 
         for (Racha racha : meusRachas) {
             for (ItemRacha item : racha.getItens()) {
-                // Find who owes for this item
+                Usuario payer = item.getPayer();
+                if (payer == null) payer = racha.getOwner();
+                if (payer == null || !payer.getIdUsuario().equals(userId)) continue; // Not paid by me
+
                 List<Devedor> devedores = devedorRepository.findByIdItemRacha(item.getIdItemRacha());
 
-                for (Devedor d : devedores) {
-                    // Skip if I assigned myself to my own racha item
-                    if (d.getIdUsuario().equals(userId)) continue;
+                for (Devedor devedor : devedores) {
+                    if (devedor.getIdUsuario().equals(userId)) continue;
 
-                    // Need to fetch the User object to get name/avatar
-                    // Ideally Devedor should link to Usuario entity directly,
-                    // but currently it links via ID. We need a quick lookup or fetch.
-                    // For MVP, let's assume we can fetch user.
-                    // *Optimization needed here later*
+                    BigDecimal valorItem = item.getPreco();
+                    BigDecimal valorDevido = valorItem.multiply(devedor.getPercentual()).divide(new BigDecimal(100));
+
+                    Optional<Usuario> devedorUserOpt = usuarioRepository.findById(devedor.getIdUsuario());
+                    if (devedorUserOpt.isPresent()) {
+                        Usuario devedorUser = devedorUserOpt.get();
+
+                        String key = racha.getIdRacha() + "-" + devedorUser.getIdUsuario();
+
+                        ResumoItemDTO dto = new ResumoItemDTO(
+                                devedorUser.getNome(),
+                                racha.getNome() + " - " + item.getNome(),
+                                valorDevido,
+                                devedorUser.getAvatarId(),
+                                devedorUser.getIdUsuario(),
+                                racha.getIdRacha()
+                        );
+
+                        creditGroups.computeIfAbsent(key, k -> new ArrayList<>()).add(dto);
+                        creditTotals.merge(key, valorDevido, BigDecimal::add);
+                    }
                 }
             }
         }
 
-        // ... (Summing logic remains similar) ...
-        // For simplicity in this step, let's keep returning the mock if the logic gets too complex without new repositories.
-        // But let's try to return at least the "A Pagar" real data since that's easy.
+        // Filter out received payments
+        for (String key : creditGroups.keySet()) {
+            String[] parts = key.split("-");
+            Long rachaId = Long.parseLong(parts[0]);
+            Long debtorId = Long.parseLong(parts[1]);
 
-        BigDecimal totalReceber = BigDecimal.ZERO; // Placeholder
+            BigDecimal totalCredit = creditTotals.get(key);
+            BigDecimal totalReceived = pagamentoRepository.calcularTotalPago(rachaId, debtorId, userId); // Them -> Me
+
+            if (totalCredit.subtract(totalReceived).compareTo(BigDecimal.ZERO) > 0) {
+                aReceber.addAll(creditGroups.get(key));
+            }
+        }
+
+        BigDecimal totalReceber = aReceber.stream().map(ResumoItemDTO::getValor).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal totalPagar = aPagar.stream().map(ResumoItemDTO::getValor).reduce(BigDecimal.ZERO, BigDecimal::add);
 
         return new ResumoDTO(totalReceber, totalPagar, aReceber, aPagar);
