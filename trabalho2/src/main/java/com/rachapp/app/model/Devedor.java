@@ -1,10 +1,11 @@
 package com.rachapp.app.model;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "devedores")
-@IdClass(DevedorId.class) // Links to the composite key class
+@IdClass(DevedorId.class)
 public class Devedor {
 
     @Id
@@ -15,13 +16,14 @@ public class Devedor {
     @Column(name = "id_usuario")
     private Long idUsuario;
 
-    @Column(name = "percentual")
-    private Integer percentual;
+    // Updated to BigDecimal for precision (e.g. 33.33%)
+    @Column(name = "percentual", precision = 5, scale = 2)
+    private BigDecimal percentual;
 
     // --- Constructors ---
     public Devedor() {}
 
-    public Devedor(Long idItemRacha, Long idUsuario, Integer percentual) {
+    public Devedor(Long idItemRacha, Long idUsuario, BigDecimal percentual) {
         this.idItemRacha = idItemRacha;
         this.idUsuario = idUsuario;
         this.percentual = percentual;
@@ -29,27 +31,12 @@ public class Devedor {
 
     // --- Getters and Setters ---
 
-    public Long getIdItemRacha() {
-        return idItemRacha;
-    }
+    public Long getIdItemRacha() { return idItemRacha; }
+    public void setIdItemRacha(Long idItemRacha) { this.idItemRacha = idItemRacha; }
 
-    public void setIdItemRacha(Long idItemRacha) {
-        this.idItemRacha = idItemRacha;
-    }
+    public Long getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
 
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public Integer getPercentual() {
-        return percentual;
-    }
-
-    public void setPercentual(Integer percentual) {
-        this.percentual = percentual;
-    }
+    public BigDecimal getPercentual() { return percentual; }
+    public void setPercentual(BigDecimal percentual) { this.percentual = percentual; }
 }

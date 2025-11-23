@@ -30,6 +30,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.getAllUsuarios());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Usuario>> searchUsuarios(@RequestParam String query) {
+        return ResponseEntity.ok(usuarioService.searchUsuarios(query));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> getUsuarioById(@PathVariable Long id) {
         return usuarioService.getUsuarioById(id)
@@ -52,16 +57,12 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    // NEW: Login Endpoint
-    // POST /api/usuarios/login
-    // Body: { "email": "...", "senha": "..." }
     @PostMapping("/login")
     public ResponseEntity<Usuario> login(@RequestBody Usuario loginData) {
         Usuario usuarioLogado = usuarioService.validarLogin(loginData.getEmail(), loginData.getSenha());
-
         if (usuarioLogado != null) {
             return ResponseEntity.ok(usuarioLogado);
         }
-        return ResponseEntity.status(401).build(); // 401 Unauthorized
+        return ResponseEntity.status(401).build();
     }
 }

@@ -3,6 +3,7 @@ package com.rachapp.app.service;
 import com.rachapp.app.model.Usuario;
 import com.rachapp.app.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder; // New Import
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,16 +13,23 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder; // Inject the encoder
 
     @Autowired
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario createUsuario(Usuario usuario) {
         if (usuario.getAvatarId() == null) {
             usuario.setAvatarId(1);
         }
+
+        // SECURITY FIX: Hash the password before saving
+        String encodedPassword = passwordEncoder.encode(usuario.getSenha());
+        usuario.setSenha(encodedPassword);
+
         return usuarioRepository.save(usuario);
     }
 
@@ -43,8 +51,10 @@ public class UsuarioService {
                 existingUser.setAvatarId(usuarioDetails.getAvatarId());
             }
 
+            // SECURITY FIX: Only hash if the password is new/changed
             if (usuarioDetails.getSenha() != null && !usuarioDetails.getSenha().isEmpty()) {
-                existingUser.setSenha(usuarioDetails.getSenha());
+                String encodedPassword = passwordEncoder.encode(usuarioDetails.getSenha());
+                existingUser.setSenha(encodedPassword);
             }
 
             return usuarioRepository.save(existingUser);
@@ -59,17 +69,20 @@ public class UsuarioService {
         return false;
     }
 
-    // NEW: Login Logic
-    public Usuario validarLogin(String email, String senha) {
+    public Usuario validarLogin(String email, String rawPassword) {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
 
-        // Check if user exists AND password matches
         if (usuarioOpt.isPresent()) {
             Usuario usuario = usuarioOpt.get();
-            if (usuario.getSenha().equals(senha)) {
+            // Check if the raw password matches the stored Hash
+            if (passwordEncoder.matches(rawPassword, usuario.getSenha())) {
                 return usuario;
             }
         }
-        return null; // Login failed
+        return null;
+    }
+
+    public List<Usuario> searchUsuarios(String query) {
+        return usuarioRepository.findByNomeContainingIgnoreCaseOrEmailContainingIgnoreCase(query, query);
     }
 }

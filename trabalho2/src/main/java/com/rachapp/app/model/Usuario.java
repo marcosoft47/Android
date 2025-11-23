@@ -1,5 +1,6 @@
 package com.rachapp.app.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -14,11 +15,12 @@ public class Usuario {
     @Column(nullable = false)
     private String nome;
 
-    @Column(nullable = false)
+    // Updated: Added unique = true constraint
+    @Column(nullable = false, unique = true)
     private String email;
 
-    // NEW FIELD: Password (Mapped to 'senha' column in DB)
     @Column(nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
 
     private String telefone;
@@ -26,10 +28,8 @@ public class Usuario {
     @Column(name = "avatar_id")
     private Integer avatarId;
 
-    // --- Constructors ---
     public Usuario() {}
 
-    // Updated Constructor to include 'senha'
     public Usuario(String nome, String email, String senha, String telefone, Integer avatarId) {
         this.nome = nome;
         this.email = email;
@@ -39,52 +39,16 @@ public class Usuario {
     }
 
     // --- Getters and Setters ---
-
-    public Long getIdUsuario() {
-        return idUsuario;
-    }
-
-    public void setIdUsuario(Long idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public Integer getAvatarId() {
-        return avatarId;
-    }
-
-    public void setAvatarId(Integer avatarId) {
-        this.avatarId = avatarId;
-    }
+    public Long getIdUsuario() { return idUsuario; }
+    public void setIdUsuario(Long idUsuario) { this.idUsuario = idUsuario; }
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getSenha() { return senha; }
+    public void setSenha(String senha) { this.senha = senha; }
+    public String getTelefone() { return telefone; }
+    public void setTelefone(String telefone) { this.telefone = telefone; }
+    public Integer getAvatarId() { return avatarId; }
+    public void setAvatarId(Integer avatarId) { this.avatarId = avatarId; }
 }
